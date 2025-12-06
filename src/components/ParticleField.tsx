@@ -33,14 +33,15 @@ const ParticleField = () => {
           className="absolute rounded-full"
           style={{
             left: `${particle.x}%`,
-            bottom: '-10%',
+            bottom: '-8%',
             width: particle.size,
             height: particle.size,
-            background: 'radial-gradient(circle, rgba(229, 9, 20, 0.6) 0%, rgba(176, 0, 32, 0.2) 100%)',
-            boxShadow: '0 0 10px rgba(229, 9, 20, 0.4)',
+            background:
+              'radial-gradient(circle, rgba(255, 22, 49, 0.9) 0%, rgba(176, 13, 49, 0.2) 100%)',
+            boxShadow: '0 0 12px rgba(255, 22, 49, 0.7)',
           }}
           animate={{
-            y: [0, -window.innerHeight - 100],
+            y: [0, -window.innerHeight - 120],
             x: [0, Math.random() * 100 - 50],
             opacity: [0, 1, 1, 0],
           }}

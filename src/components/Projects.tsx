@@ -1,53 +1,240 @@
 import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
-import { ExternalLink, Github } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
+import { ExternalLink, Github, ChevronLeft, ChevronRight } from 'lucide-react';
+
+type Project = {
+  title: string;
+  subtitle?: string;
+  description: string;
+  tech: string[];
+  images: string[]; // user will replace with actual image URLs/paths
+  live?: string;
+  code?: string;
+};
+
+interface ProjectCardProps {
+  project: Project;
+  index: number;
+  isInView: boolean;
+}
+
+const ProjectCard = ({ project, index, isInView }: ProjectCardProps) => {
+  const [currentImage, setCurrentImage] = useState(0);
+  const [hovered, setHovered] = useState(false);
+  const intervalRef = useRef<number | null>(null);
+
+  const total = project.images.length || 1;
+
+  const nextImage = () =>
+    setCurrentImage((prev) => (prev + 1) % total);
+
+  const prevImage = () =>
+    setCurrentImage((prev) => (prev - 1 + total) % total);
+
+  const startAutoSlide = () => {
+    if (intervalRef.current !== null || total <= 1) return;
+    intervalRef.current = window.setInterval(nextImage, 2000);
+  };
+
+  const stopAutoSlide = () => {
+    if (intervalRef.current !== null) {
+      window.clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    if (hovered) startAutoSlide();
+    else stopAutoSlide();
+    return stopAutoSlide;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hovered, total]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 60 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      whileHover={{ y: -8 }}
+      className="group relative"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="relative h-full rounded-2xl border border-[#FF1631]/25 bg-[#050509]/90 backdrop-blur-xl overflow-hidden flex flex-col shadow-[0_30px_80px_rgba(0,0,0,0.8)]">
+        {/* image area */}
+        <div className="relative h-52 overflow-hidden">
+          {project.images.length > 0 && (
+            <motion.img
+              key={currentImage}
+              src={project.images[currentImage]}
+              alt={project.title}
+              className="w-full h-full object-cover"
+              initial={{ scale: 1.05, opacity: 0 }}
+              animate={{ scale: 1.02, opacity: 1 }}
+              transition={{ duration: 0.4 }}
+            />
+          )}
+
+          {/* gradient overlay */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050509] via-transparent to-transparent" />
+
+          {/* tinted overlay on hover */}
+          <motion.div
+            className="absolute inset-0 bg-[#FF1631] mix-blend-multiply"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: hovered ? 0.26 : 0 }}
+            transition={{ duration: 0.25 }}
+          />
+
+          {/* arrows */}
+          {total > 1 && (
+            <div className="absolute inset-0 flex items-center justify-between px-3">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prevImage();
+                }}
+                className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-black/40 text-white border border-white/30 hover:bg-black/70 transition-colors"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextImage();
+                }}
+                className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-black/40 text-white border border-white/30 hover:bg-black/70 transition-colors"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
+
+          {/* dots */}
+          {total > 1 && (
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+              {project.images.map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === currentImage
+                      ? 'w-5 bg-white'
+                      : 'w-2 bg-white/50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* body */}
+        <div className="flex-1 flex flex-col px-6 py-5">
+          <div className="mb-3">
+            <h3 className="text-lg font-semibold text-[#FFE3ED] tracking-[0.16em] uppercase">
+              {project.title}
+            </h3>
+            {project.subtitle && (
+              <p className="mt-1 text-[0.75rem] tracking-[0.28em] uppercase text-[#FF9AAF]">
+                {project.subtitle}
+              </p>
+            )}
+          </div>
+          <p className="text-sm text-[#C0AEB9] leading-relaxed flex-1">
+            {project.description}
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {project.tech.map((tech) => (
+              <span
+                key={tech}
+                className="px-3 py-1 rounded-full border border-[#FF1631]/40 bg-[#050509] text-[0.7rem] text-[#FFE3ED] tracking-[0.18em] uppercase"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-5 flex gap-4 border-t border-white/5 pt-4">
+            {project.live && (
+              <motion.a
+                href={project.live}
+                whileHover={{ scale: 1.05, x: 2 }}
+                className="flex items-center gap-2 text-xs text-[#FDF2F5] tracking-[0.2em] uppercase hover:text-[#FF9AAF]"
+              >
+                <ExternalLink size={14} />
+                <span>Live</span>
+              </motion.a>
+            )}
+            {project.code && (
+              <motion.a
+                href={project.code}
+                whileHover={{ scale: 1.05, x: 2 }}
+                className="flex items-center gap-2 text-xs text-[#FDF2F5] tracking-[0.2em] uppercase hover:text-[#FF9AAF]"
+              >
+                <Github size={14} />
+                <span>Code</span>
+              </motion.a>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const Projects = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
-  const projects = [
+  const projects: Project[] = [
     {
-      title: 'Shadow Commerce',
+      title: 'Scalable Predictive Analytics Platform',
+      subtitle: 'Reinforcement Learning • AWS',
       description:
-        'A dark-themed e-commerce platform with real-time inventory tracking and atmospheric UI',
-      tech: ['React', 'Node.js', 'MongoDB', 'Stripe'],
-      image: 'https://images.pexels.com/photos/270404/pexels-photo-270404.jpeg',
+        'A low-latency analytics platform that uses reinforcement learning to drive reliable predictions. Optimized server-side caching to cut operational disruptions by 90% and keep the system resilient under load.',
+      tech: ['Python', 'AWS', 'Node.js', 'Reinforcement Learning', 'SQL'],
+      images: [
+        '/images/predictive-1.jpg',
+        '/images/predictive-2.jpg',
+        '/images/predictive-3.jpg',
+      ],
     },
     {
-      title: 'Neural Interface',
+      title: 'Real-Time Threat Detection System',
+      subtitle: 'Streaming NLP on AWS Lambda',
       description:
-        'AI-powered dashboard with predictive analytics and immersive data visualization',
-      tech: ['Next.js', 'Python', 'TensorFlow', 'D3.js'],
-      image: 'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg',
+        'High-performance pipeline that ingests high-velocity data streams and triggers real-time alerts. A distributed inference design improved model accuracy and reduced false positives by 30%.',
+      tech: ['Python', 'TensorFlow', 'NLP', 'AWS Lambda'],
+      images: [
+        '/images/threat-1.jpg',
+        '/images/threat-2.jpg',
+        '/images/threat-3.jpg',
+      ],
     },
     {
-      title: 'Void Chat',
+      title: 'Distributed Health Data Application',
+      subtitle: 'Microservices at Scale',
       description:
-        'Encrypted real-time messaging app with end-to-end security and dark mode',
-      tech: ['React', 'WebSocket', 'Express', 'PostgreSQL'],
-      image: 'https://images.pexels.com/photos/1591062/pexels-photo-1591062.jpeg',
+        'Secure full-stack app for processing 300k+ health records. Designed REST APIs for a microservices backend and tuned data handling + lazy loading to improve perceived performance by 20%.',
+      tech: ['Node.js', 'React', 'MongoDB', 'REST APIs', 'Microservices'],
+      images: [
+        '/images/health-1.jpg',
+        '/images/health-2.jpg',
+        '/images/health-3.jpg',
+      ],
     },
     {
-      title: 'Crimson Analytics',
+      title: 'High-Throughput Scheduling Engine',
+      subtitle: 'Walmart ASE Virtual Experience',
       description:
-        'Business intelligence platform with advanced data processing and reporting',
-      tech: ['Vue.js', 'GraphQL', 'Redis', 'Docker'],
-      image: 'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg',
-    },
-    {
-      title: 'Dark Portfolio',
-      description:
-        'Interactive portfolio generator with cinematic animations and custom themes',
-      tech: ['React', 'Framer Motion', 'Tailwind', 'Supabase'],
-      image: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg',
-    },
-    {
-      title: 'Eclipse API',
-      description:
-        'High-performance REST API with advanced caching and rate limiting',
-      tech: ['Node.js', 'Express', 'Redis', 'MongoDB'],
-      image: 'https://images.pexels.com/photos/1089438/pexels-photo-1089438.jpeg',
+        'Scheduling engine built around a custom priority queue to eliminate processing bottlenecks. The design improved algorithmic efficiency by 25% and came with UML documentation that sped up peer reviews by 15%.',
+      tech: ['Java', 'Data Structures', 'System Design'],
+      images: [
+        '/images/walmart-1.jpg',
+        '/images/walmart-2.jpg',
+      ],
     },
   ];
 
@@ -55,197 +242,59 @@ const Projects = () => {
     <section
       id="projects"
       ref={ref}
-      className="relative min-h-screen py-32 bg-[#0B0B0D] overflow-hidden"
+      className="relative min-h-screen py-28 bg-[#050509] overflow-hidden"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(176,0,32,0.1)_0%,_transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,22,49,0.13)_0%,_transparent_60%)]" />
 
       <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#B00020] rounded-full blur-[200px] opacity-5"
-        animate={{
-          scale: [1, 1.2, 1],
-          rotate: [0, 180, 360],
-        }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[560px] bg-[#FF1631] rounded-full blur-[220px] opacity-10"
+        animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
         transition={{ duration: 30, repeat: Infinity }}
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
+        {/* heading */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="text-center mb-18"
         >
           <motion.div
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : {}}
             transition={{ duration: 0.8 }}
-            className="h-1 w-16 bg-[#E50914] mx-auto mb-6"
+            className="h-[2px] w-16 bg-gradient-to-r from-[#FF1631] via-[#FF4B6E] to-transparent mx-auto mb-5"
           />
-
           <motion.h2
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold tracking-[0.2em] text-[#F2E9E4] mb-6"
+            transition={{ duration: 0.8, delay: 0.15 }}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[0.2em] text-[#FDF2F5]"
           >
-            <motion.span
-              animate={{
-                textShadow: [
-                  '0 0 15px #E50914, 0 0 30px #B00020',
-                  '0 0 25px #E50914, 0 0 50px #B00020',
-                  '0 0 15px #E50914, 0 0 30px #B00020',
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              PROJECTS
-            </motion.span>
+            PROJECTS
           </motion.h2>
-
           <motion.p
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-[#5A5A5A] text-lg md:text-xl max-w-2xl mx-auto"
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mt-5 text-[#C0AEB9] text-base md:text-lg max-w-2xl mx-auto"
           >
-            Creations forged in the depths of innovation
+            Creations forged where high-throughput systems, ML and clean design intersect.
           </motion.p>
         </motion.div>
 
+        {/* grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <motion.div
+            <ProjectCard
               key={project.title}
-              initial={{ opacity: 0, y: 50 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="group relative"
-            >
-              <div className="bg-[#1A1A1D] border border-[#B00020]/30 overflow-hidden h-full flex flex-col">
-                <motion.div
-                  className="absolute inset-0 border border-[#E50914] opacity-0 group-hover:opacity-100 pointer-events-none z-20"
-                  animate={{
-                    boxShadow: [
-                      '0 0 0px rgba(229, 9, 20, 0)',
-                      '0 0 40px rgba(229, 9, 20, 0.4)',
-                      '0 0 0px rgba(229, 9, 20, 0)',
-                    ],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-
-                <div className="relative h-48 overflow-hidden">
-                  <motion.img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-t from-[#0B0B0D] via-transparent to-transparent"
-                    initial={{ opacity: 0.5 }}
-                    whileHover={{ opacity: 0.8 }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 bg-[#E50914] mix-blend-multiply"
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 0.2 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </div>
-
-                <div className="p-6 flex-1 flex flex-col">
-                  <motion.h3
-                    className="text-xl font-bold text-[#F2E9E4] tracking-wider mb-3 group-hover:text-[#E50914] transition-colors"
-                    whileHover={{ x: 5 }}
-                  >
-                    {project.title}
-                  </motion.h3>
-
-                  <p className="text-[#5A5A5A] text-sm leading-relaxed mb-4 flex-1">
-                    {project.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tech.map((tech) => (
-                      <motion.span
-                        key={tech}
-                        whileHover={{ scale: 1.05 }}
-                        className="px-3 py-1 bg-[#0B0B0D] border border-[#B00020]/50 text-[#E50914] text-xs tracking-wider"
-                      >
-                        {tech}
-                      </motion.span>
-                    ))}
-                  </div>
-
-                  <div className="flex gap-4 pt-4 border-t border-[#B00020]/30">
-                    <motion.a
-                      href="#"
-                      whileHover={{ scale: 1.1, x: 3 }}
-                      className="flex items-center gap-2 text-[#F2E9E4] text-sm hover:text-[#E50914] transition-colors group/link"
-                    >
-                      <ExternalLink size={16} />
-                      <span className="relative">
-                        Live Demo
-                        <motion.span
-                          className="absolute -bottom-1 left-0 w-0 h-px bg-[#E50914] group-hover/link:w-full transition-all duration-300"
-                        />
-                      </span>
-                    </motion.a>
-
-                    <motion.a
-                      href="#"
-                      whileHover={{ scale: 1.1, x: 3 }}
-                      className="flex items-center gap-2 text-[#F2E9E4] text-sm hover:text-[#E50914] transition-colors group/link"
-                    >
-                      <Github size={16} />
-                      <span className="relative">
-                        Code
-                        <motion.span
-                          className="absolute -bottom-1 left-0 w-0 h-px bg-[#E50914] group-hover/link:w-full transition-all duration-300"
-                        />
-                      </span>
-                    </motion.a>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              project={project}
+              index={index}
+              isInView={!!isInView}
+            />
           ))}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="text-center mt-16"
-        >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="group relative px-10 py-4 bg-transparent border-2 border-[#E50914] text-[#F2E9E4] tracking-widest uppercase text-sm font-bold overflow-hidden"
-          >
-            <motion.span
-              className="absolute inset-0 bg-[#E50914]"
-              initial={{ x: '-100%' }}
-              whileHover={{ x: 0 }}
-              transition={{ duration: 0.3 }}
-            />
-            <span className="relative z-10">View All Projects</span>
-            <motion.div
-              className="absolute inset-0"
-              animate={{
-                boxShadow: [
-                  '0 0 20px rgba(229, 9, 20, 0.4)',
-                  '0 0 40px rgba(229, 9, 20, 0.7)',
-                  '0 0 20px rgba(229, 9, 20, 0.4)',
-                ],
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </motion.button>
-        </motion.div>
       </div>
     </section>
   );

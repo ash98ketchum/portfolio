@@ -8,168 +8,199 @@ const Hero = () => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const rotateX = useTransform(mouseY, [-300, 300], [5, -5]);
-  const rotateY = useTransform(mouseX, [-300, 300], [-5, 5]);
+  const rotateX = useTransform(mouseY, [-300, 300], [8, -8]);
+  const rotateY = useTransform(mouseX, [-300, 300], [-8, 8]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
       const { innerWidth, innerHeight } = window;
-      mouseX.set(clientX - innerWidth / 2);
-      mouseY.set(clientY - innerHeight / 2);
+      mouseX.set(e.clientX - innerWidth / 2);
+      mouseY.set(e.clientY - innerHeight / 2);
     };
-
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
+  const socials = [
+    { icon: Github, href: '#', label: 'GitHub' },
+    { icon: Linkedin, href: '#', label: 'LinkedIn' },
+    { icon: Mail, href: '#contact', label: 'Email' },
+  ];
+
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0B0B0D]"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050509]"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(176,0,32,0.15)_0%,_transparent_70%)]" />
-
+      {/* Core glow + fog + particles */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_0%,rgba(255,22,49,0.35)_0%,transparent_55%),radial-gradient(circle_at_90%_0%,rgba(176,13,49,0.3)_0%,transparent_60%)]" />
       <FogLayer />
       <ParticleField />
 
+      {/* subtle grid */}
       <motion.div
-        className="absolute inset-0 opacity-5"
+        className="absolute inset-0 opacity-[0.04]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23F2E9E4' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage:
+            "linear-gradient(#FF16311f 1px, transparent 1px), linear-gradient(90deg, #FF16311f 1px, transparent 1px)",
+          backgroundSize: '80px 80px',
         }}
+        animate={{ opacity: [0.02, 0.06, 0.02] }}
+        transition={{ duration: 6, repeat: Infinity }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 text-center">
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.2 }}
           style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
-          className="space-y-8"
+          className="space-y-10"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9 }}
         >
+          {/* Pill intro */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="inline-block"
+            transition={{ delay: 0.3 }}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-[#FF1631]/40 bg-[#050509]/80 backdrop-blur-md"
           >
-            <span className="text-[#E50914] text-sm tracking-[0.3em] uppercase font-medium">
-              Welcome to the Upside Down
+            <span className="h-1.5 w-1.5 rounded-full bg-[#FF1631] shadow-[0_0_10px_rgba(255,22,49,0.8)]" />
+            <span className="text-[0.68rem] tracking-[0.35em] uppercase text-[#F9DFE7]/80">
+              ICPC Asia West Regionalist • Codeforces Master 2105
             </span>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 50 }}
+          {/* Main heading */}
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-6xl md:text-8xl font-bold tracking-widest text-[#F2E9E4] relative"
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="space-y-4"
           >
-            <motion.span
-              animate={{
-                textShadow: [
-                  '0 0 20px #E50914, 0 0 40px #E50914, 0 0 60px #B00020, 0 0 80px #B00020',
-                  '0 0 40px #E50914, 0 0 60px #E50914, 0 0 80px #B00020, 0 0 100px #B00020',
-                  '0 0 20px #E50914, 0 0 40px #E50914, 0 0 60px #B00020, 0 0 80px #B00020',
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="block"
-            >
-              DEVELOPER
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 1 }}
-              className="block mt-4 text-5xl md:text-7xl text-[#E50914]"
-            >
-              FROM THE SHADOWS
-            </motion.span>
-          </motion.h1>
+            <p className="text-xs md:text-sm tracking-[0.45em] uppercase text-[#FF879A]">
+              Developer from the shadows
+            </p>
 
+            <h1 className="font-bold tracking-tight leading-tight">
+              <span className="block text-4xl md:text-5xl lg:text-6xl text-[#FDF2F5]">
+                Anirudh Chauhan
+              </span>
+              <motion.span
+                className="mt-2 block text-4xl md:text-5xl lg:text-6xl bg-gradient-to-r from-[#FF1631] via-[#FF4B6E] to-[#FFE6F0] bg-clip-text text-transparent tracking-[0.12em] uppercase"
+                animate={{
+                  textShadow: [
+                    '0 0 24px #FF1631, 0 0 60px #FF163155',
+                    '0 0 40px #FF4B6E, 0 0 90px #FF4B6E55',
+                    '0 0 24px #FF1631, 0 0 60px #FF163155',
+                  ],
+                }}
+                transition={{ duration: 3.2, repeat: Infinity }}
+              >
+                Systems & ML Engineer
+              </motion.span>
+            </h1>
+          </motion.div>
+
+          {/* Subtext */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 1.2 }}
-            className="text-lg md:text-xl text-[#5A5A5A] max-w-3xl mx-auto leading-relaxed tracking-wide"
+            transition={{ delay: 0.9, duration: 0.8 }}
+            className="max-w-3xl mx-auto text-base md:text-lg text-[#C0AEB9] leading-relaxed"
           >
-            Crafting immersive digital experiences from the depths of code.
-            <br />
-            Where darkness meets innovation, and mysteries become reality.
+            I architect scalable platforms, real-time threat detection systems, and distributed health
+            applications. Competitive programming is my playground, where over 2000+ problems and
+            global top-50 finishes sharpen how I design production-grade systems.
           </motion.p>
 
+          {/* CTA buttons */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.4 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8"
+            transition={{ delay: 1.1 }}
+            className="flex flex-col sm:flex-row justify-center items-center gap-5 pt-4"
           >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative px-8 py-4 bg-transparent border-2 border-[#E50914] text-[#F2E9E4] rounded-none tracking-widest uppercase text-sm font-bold overflow-hidden"
+            <a
+              href="#projects"
+              className="group relative inline-flex items-center justify-center gap-2 px-9 py-3.5 rounded-full text-xs tracking-[0.26em] uppercase font-semibold text-[#050509]"
             >
+              <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#FF1631] via-[#FF4B6E] to-[#FFE6F0]" />
               <motion.span
-                className="absolute inset-0 bg-[#E50914]"
-                initial={{ x: '-100%' }}
-                whileHover={{ x: 0 }}
-                transition={{ duration: 0.3 }}
+                className="absolute -inset-[1px] rounded-full border border-transparent"
+                animate={{
+                  boxShadow: [
+                    '0 0 25px rgba(255,22,49,0.5)',
+                    '0 0 40px rgba(255,75,110,0.7)',
+                    '0 0 25px rgba(255,22,49,0.5)',
+                  ],
+                }}
+                transition={{ duration: 2.5, repeat: Infinity }}
               />
               <span className="relative z-10 flex items-center gap-2">
                 View Projects
-                <ArrowRight className="group-hover:translate-x-1 transition-transform" size={18} />
+                <ArrowRight
+                  size={18}
+                  className="transition-transform group-hover:translate-x-1"
+                />
               </span>
-              <motion.div
-                className="absolute inset-0"
-                animate={{
-                  boxShadow: [
-                    '0 0 20px rgba(229, 9, 20, 0.5)',
-                    '0 0 40px rgba(229, 9, 20, 0.8)',
-                    '0 0 20px rgba(229, 9, 20, 0.5)',
-                  ],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </motion.button>
+            </a>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-[#1A1A1D] border-2 border-[#B00020] text-[#F2E9E4] rounded-none tracking-widest uppercase text-sm font-bold hover:bg-[#B00020]/20 transition-colors"
+            <a
+              href="#contact"
+              className="relative inline-flex items-center justify-center gap-2 px-9 py-3.5 rounded-full border border-[#FF1631]/40 bg-[#050509]/80 text-xs tracking-[0.26em] uppercase text-[#FDEAF1] font-semibold hover:border-[#FF4B6E]/80 hover:bg-[#15020B] transition-colors"
             >
               Contact Me
-            </motion.button>
+            </a>
           </motion.div>
 
+          {/* Stats row */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.3 }}
+            className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto"
+          >
+            {[
+              { label: 'Problems Solved', value: '2000+' },
+              { label: 'Global Contest Top Ranks', value: '4×' },
+              { label: 'ICPC Regional Runs', value: 'Asia West' },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-2xl border border-[#FF1631]/20 bg-[#050509]/80 px-5 py-4 backdrop-blur-md"
+              >
+                <p className="text-sm text-[#D7C2CD]/80">{stat.label}</p>
+                <p className="text-2xl font-semibold text-[#FFE3ED] mt-1">{stat.value}</p>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Socials */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 1.6 }}
-            className="flex gap-6 justify-center pt-12"
+            transition={{ delay: 1.5 }}
+            className="flex justify-center gap-4 pt-10"
           >
-            {[
-              { icon: Github, href: '#' },
-              { icon: Linkedin, href: '#' },
-              { icon: Mail, href: '#' },
-            ].map((social, index) => (
+            {socials.map((social, i) => (
               <motion.a
-                key={index}
+                key={social.label}
                 href={social.href}
-                whileHover={{ scale: 1.2, rotate: 5 }}
-                className="p-3 border border-[#B00020] text-[#F2E9E4] hover:bg-[#B00020]/20 hover:border-[#E50914] transition-all group relative"
+                aria-label={social.label}
+                whileHover={{ scale: 1.1, y: -2 }}
+                className="relative p-3 rounded-full border border-[#FF1631]/30 bg-[#050509]/70 text-[#FDF2F5] hover:border-[#FF4B6E]/80 transition-colors"
               >
-                <social.icon size={24} />
+                <social.icon size={22} />
                 <motion.div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100"
+                  className="pointer-events-none absolute inset-0 rounded-full"
                   animate={{
                     boxShadow: [
-                      '0 0 0px rgba(229, 9, 20, 0)',
-                      '0 0 20px rgba(229, 9, 20, 0.6)',
-                      '0 0 0px rgba(229, 9, 20, 0)',
+                      '0 0 0px rgba(255,22,49,0)',
+                      '0 0 20px rgba(255,22,49,0.6)',
+                      '0 0 0px rgba(255,22,49,0)',
                     ],
                   }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.2 }}
                 />
               </motion.a>
             ))}
@@ -177,21 +208,22 @@ const Hero = () => {
         </motion.div>
       </div>
 
+      {/* Scroll cue */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: [0.3, 0.6, 0.3] }}
+        animate={{ opacity: [0.3, 0.9, 0.3] }}
         transition={{ duration: 3, repeat: Infinity }}
-        className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
         <motion.div
           animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-6 h-10 border-2 border-[#E50914] rounded-full flex justify-center pt-2"
+          transition={{ duration: 1.8, repeat: Infinity }}
+          className="w-6 h-10 rounded-full border border-[#FF1631]/70 flex justify-center pt-2"
         >
           <motion.div
             animate={{ y: [0, 12, 0], opacity: [1, 0, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-1 h-2 bg-[#E50914] rounded-full"
+            transition={{ duration: 1.8, repeat: Infinity }}
+            className="w-1 h-2 rounded-full bg-[#FF1631]"
           />
         </motion.div>
       </motion.div>
