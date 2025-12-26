@@ -1,6 +1,7 @@
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useEffect } from 'react';
 import { ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
+import { SiCodeforces, SiLeetcode } from "react-icons/si";
 import ParticleField from './ParticleField';
 import FogLayer from './FogLayer';
 
@@ -8,8 +9,8 @@ const Hero = () => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const rotateX = useTransform(mouseY, [-300, 300], [8, -8]);
-  const rotateY = useTransform(mouseX, [-300, 300], [-8, 8]);
+  const rotateX = useTransform(mouseY, [-300, 300], [4, -4]);
+  const rotateY = useTransform(mouseX, [-300, 300], [-4, 4]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -21,10 +22,13 @@ const Hero = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
+  // ⭐ FIXED SOCIALS
   const socials = [
-    { icon: Github, href: '#', label: 'GitHub' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn' },
-    { icon: Mail, href: '#contact', label: 'Email' },
+    { icon: Github, href: 'https://github.com/ash98ketchum', label: 'GitHub' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/anirudh-chauhan-7852a8276', label: 'LinkedIn' },
+    { icon: SiCodeforces, href: 'https://codeforces.com/profile/anirudhc69', label: 'Codeforces' },
+    { icon: SiLeetcode, href: 'https://leetcode.com/u/ash98ketchum_', label: 'LeetCode' },
+    { icon: Mail, href: 'mailto:anirudhchauhan8074@gmail.com', label: 'Email' },
   ];
 
   return (
@@ -32,32 +36,37 @@ const Hero = () => {
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050509]"
     >
-      {/* Core glow + fog + particles */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_0%,rgba(255,22,49,0.35)_0%,transparent_55%),radial-gradient(circle_at_90%_0%,rgba(176,13,49,0.3)_0%,transparent_60%)]" />
-      <FogLayer />
-      <ParticleField />
+      {/* BACKGROUND LIGHTS */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_0%,rgba(255,22,49,0.35)_0%,transparent_55%),radial-gradient(circle_at_90%_0%,rgba(176,13,49,0.3)_0%,transparent_60%)]" />
 
-      {/* subtle grid */}
+      {/* FOG + PARTICLES (FIXED pointer-events) */}
+      <div className="pointer-events-none">
+        <FogLayer />
+        <ParticleField />
+      </div>
+
+      {/* GRID */}
       <motion.div
-        className="absolute inset-0 opacity-[0.04]"
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage:
             "linear-gradient(#FF16311f 1px, transparent 1px), linear-gradient(90deg, #FF16311f 1px, transparent 1px)",
-          backgroundSize: '80px 80px',
+          backgroundSize: "80px 80px",
         }}
         animate={{ opacity: [0.02, 0.06, 0.02] }}
         transition={{ duration: 6, repeat: Infinity }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 text-center">
+      {/* CONTENT */}
+      <div className="relative z-50 max-w-7xl mx-auto px-6 py-24 text-center">
         <motion.div
-          style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
           className="space-y-10"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9 }}
         >
-          {/* Pill intro */}
+          {/* TOP PILL */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -70,7 +79,7 @@ const Hero = () => {
             </span>
           </motion.div>
 
-          {/* Main heading */}
+          {/* MAIN HEADING */}
           <motion.div
             initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
@@ -85,13 +94,22 @@ const Hero = () => {
               <span className="block text-4xl md:text-5xl lg:text-6xl text-[#FDF2F5]">
                 Anirudh Chauhan
               </span>
+
+              {/* ⭐ FIXED VISIBILITY ROLE */}
               <motion.span
-                className="mt-2 block text-4xl md:text-5xl lg:text-6xl bg-gradient-to-r from-[#FF1631] via-[#FF4B6E] to-[#FFE6F0] bg-clip-text text-transparent tracking-[0.12em] uppercase"
+                className="mt-2 block text-4xl md:text-5xl lg:text-6xl bg-gradient-to-r 
+                from-[#FF1631] via-[#FF4B6E] to-[#FFE6F0] 
+                bg-clip-text text-transparent tracking-[0.12em] uppercase"
+                style={{
+                  textShadow:
+                    "0 0 12px rgba(255,46,76,0.8), 0 0 28px rgba(255,46,76,0.5)",
+                }}
                 animate={{
+                  opacity: [0.95, 1, 0.95],
                   textShadow: [
-                    '0 0 24px #FF1631, 0 0 60px #FF163155',
-                    '0 0 40px #FF4B6E, 0 0 90px #FF4B6E55',
-                    '0 0 24px #FF1631, 0 0 60px #FF163155',
+                    "0 0 20px #FF1631, 0 0 55px #FF1631",
+                    "0 0 30px #FF4B6E, 0 0 80px #FF4B6E",
+                    "0 0 20px #FF1631, 0 0 55px #FF1631",
                   ],
                 }}
                 transition={{ duration: 3.2, repeat: Infinity }}
@@ -101,19 +119,19 @@ const Hero = () => {
             </h1>
           </motion.div>
 
-          {/* Subtext */}
+          {/* SUBTEXT */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.8 }}
             className="max-w-3xl mx-auto text-base md:text-lg text-[#C0AEB9] leading-relaxed"
           >
-            I architect scalable platforms, real-time threat detection systems, and distributed health
-            applications. Competitive programming is my playground, where over 2000+ problems and
-            global top-50 finishes sharpen how I design production-grade systems.
+            I architect scalable platforms, real-time threat detection systems, and distributed
+            health applications. Competitive programming is my playground, where over 2000+ problems
+            and global top-50 finishes sharpen how I design production-grade systems.
           </motion.p>
 
-          {/* CTA buttons */}
+          {/* CTA BUTTONS */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,19 +147,16 @@ const Hero = () => {
                 className="absolute -inset-[1px] rounded-full border border-transparent"
                 animate={{
                   boxShadow: [
-                    '0 0 25px rgba(255,22,49,0.5)',
-                    '0 0 40px rgba(255,75,110,0.7)',
-                    '0 0 25px rgba(255,22,49,0.5)',
+                    "0 0 25px rgba(255,22,49,0.5)",
+                    "0 0 40px rgba(255,75,110,0.7)",
+                    "0 0 25px rgba(255,22,49,0.5)",
                   ],
                 }}
                 transition={{ duration: 2.5, repeat: Infinity }}
               />
               <span className="relative z-10 flex items-center gap-2">
                 View Projects
-                <ArrowRight
-                  size={18}
-                  className="transition-transform group-hover:translate-x-1"
-                />
+                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
               </span>
             </a>
 
@@ -153,7 +168,7 @@ const Hero = () => {
             </a>
           </motion.div>
 
-          {/* Stats row */}
+          {/* STATS */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -170,22 +185,26 @@ const Hero = () => {
                 className="rounded-2xl border border-[#FF1631]/20 bg-[#050509]/80 px-5 py-4 backdrop-blur-md"
               >
                 <p className="text-sm text-[#D7C2CD]/80">{stat.label}</p>
-                <p className="text-2xl font-semibold text-[#FFE3ED] mt-1">{stat.value}</p>
+                <p className="text-2xl font-semibold text-[#FFE3ED] mt-1">
+                  {stat.value}
+                </p>
               </div>
             ))}
           </motion.div>
 
-          {/* Socials */}
+          {/* SOCIALS — FIXED CLICKABILITY */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5 }}
-            className="flex justify-center gap-4 pt-10"
+            className="relative z-50 flex justify-center gap-4 pt-10"
           >
             {socials.map((social, i) => (
               <motion.a
                 key={social.label}
                 href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={social.label}
                 whileHover={{ scale: 1.1, y: -2 }}
                 className="relative p-3 rounded-full border border-[#FF1631]/30 bg-[#050509]/70 text-[#FDF2F5] hover:border-[#FF4B6E]/80 transition-colors"
@@ -195,9 +214,9 @@ const Hero = () => {
                   className="pointer-events-none absolute inset-0 rounded-full"
                   animate={{
                     boxShadow: [
-                      '0 0 0px rgba(255,22,49,0)',
-                      '0 0 20px rgba(255,22,49,0.6)',
-                      '0 0 0px rgba(255,22,49,0)',
+                      "0 0 0px rgba(255,22,49,0)",
+                      "0 0 20px rgba(255,22,49,0.6)",
+                      "0 0 0px rgba(255,22,49,0)",
                     ],
                   }}
                   transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.2 }}
@@ -207,26 +226,6 @@ const Hero = () => {
           </motion.div>
         </motion.div>
       </div>
-
-      {/* Scroll cue */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0.3, 0.9, 0.3] }}
-        transition={{ duration: 3, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity }}
-          className="w-6 h-10 rounded-full border border-[#FF1631]/70 flex justify-center pt-2"
-        >
-          <motion.div
-            animate={{ y: [0, 12, 0], opacity: [1, 0, 1] }}
-            transition={{ duration: 1.8, repeat: Infinity }}
-            className="w-1 h-2 rounded-full bg-[#FF1631]"
-          />
-        </motion.div>
-      </motion.div>
     </section>
   );
 };
