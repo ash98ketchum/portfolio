@@ -4,7 +4,7 @@ const achievements = [
   {
     title: "ICPC Asia West Regionalist",
     img: "/images/icpc.jpeg",   // <-- put your image in public/images
-    desc: "Qualified and competed in the ICPC Asia West Regionals — one of the toughest competitive programming contests globally.",
+    desc:  "Qualified and competed in the ICPC Asia West Regionals — one of the toughest competitive programming contests globally.",
   },
   {
     title: "Codeforces Master (2105)",
@@ -21,6 +21,11 @@ const achievements = [
     img: "/images/oss.jpg",
     desc: "Selected for Script Winter/Summer of Code, contributing to open-source systems and ML projects.",
   },
+  {
+    title: "Dean's List Honoree",
+    img: "/images/deanslist.jpg",
+    desc: "Consistently recognized on the Dean's List for academic excellence and outstanding performance in coursework.",
+  }
 ];
 
 const Achievements = () => {
